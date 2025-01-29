@@ -24,7 +24,7 @@ jobs:
         run: npm run test
       - name: Archive test results
         if: success() || failure()
-        uses: action/upload-artifact@v3
+        uses: actions/upload-artifact@v3
         with: 
           name: test-reports
           path: |
