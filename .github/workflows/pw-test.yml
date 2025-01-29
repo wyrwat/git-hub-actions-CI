@@ -28,6 +28,6 @@ jobs:
         with: 
           name: test-reports
           path: |
-            './playwright-report/**/*.*'
-            './test-results/**/*.*'
+            ./playwright-report/**/*.*
+            ./test-results/**/*.*
     
