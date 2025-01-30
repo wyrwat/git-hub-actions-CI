@@ -23,12 +23,12 @@ jobs:
           cache: "npm"
           registry-url: "https://npm.pkg.github.com"
       - name: Cache playwright binaries
-        uses: actions/cache@v4
+        uses: actions/cache@v3
         id: playwright-cache
         with:
           path: |
-            ~/.cache/ms-playwirght
-          key: ${{ runner.os }}-playwright
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright  
       - name: Debug Cache Path
         run: ls -lah ~/.cache/ms-playwright || echo "Cache directory not found"
       - name: Install dependencies
