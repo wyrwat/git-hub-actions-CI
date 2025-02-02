@@ -21,7 +21,10 @@ jobs:
         with:
           node-version: 22
           cache: "npm"
-          registry-url: "https://npm.pkg.github.com"
+          registry-url: "https://npm.pkg.github.com"      
+      - name: Get installed Playwright version
+        id: playwright-version
+        run: echo "PLAYWRIGHT_VERSION=$(node -e "console.log(require('./package-lock.json').dependencies['@playwright/test'].version)")" >> $GITHUB_ENV
       - name: Cache playwright binaries
         if: always()
         uses: actions/cache@v3
@@ -29,7 +32,7 @@ jobs:
         with:
           path: |
             ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright  
+          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}  
       - name: Debug Cache Path
         run: ls -lah ~/.cache/ms-playwright || echo "Cache directory not found"
       - name: Install dependencies
@@ -54,3 +57,12 @@ jobs:
         if: success() || failure()
         with:
           report_paths: "./playwright-report/results.xml"
+      - name: Save cache always
+        id: save-playwright-cache
+        if: always()
+        uses: actions/cache/save@v3
+        with:
+          path: |
+            ~/.cache/ms-playwright
+            key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
+      
