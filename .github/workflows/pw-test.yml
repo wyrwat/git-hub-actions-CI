@@ -23,6 +23,7 @@ jobs:
           cache: "npm"
           registry-url: "https://npm.pkg.github.com"
       - name: Cache playwright binaries
+        if: always()
         uses: actions/cache@v3
         id: playwright-cache
         with:
