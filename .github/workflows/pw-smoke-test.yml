@@ -35,7 +35,15 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}  
       - name: Debug Cache Path
         run: ls -lah ~/.cache/ms-playwright || echo "Cache directory not found"
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        id: node-cashe
+        with:
+          path: |
+            node_modules
+          key: node_modules
       - name: Install dependencies
+        if: steps.node-cashe.outputs.cache-hit != 'true'
         run: npm ci
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cashe-hit != 'true'
