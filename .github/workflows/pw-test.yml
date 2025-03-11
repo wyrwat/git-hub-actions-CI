@@ -8,7 +8,7 @@ on:
   pull_request:
     branches: [main, master]
 jobs:
-  run-tests:
+  run-smoke-tests:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     permissions:
@@ -47,16 +47,16 @@ jobs:
         if: steps.playwright-cache.outputs.cashe-hit != 'true'      
         run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: npm run test
+        run: npm run test:smoke
       - name: Archive test results
         if: success() || failure()
         uses: actions/upload-artifact@v4
         with: 
-          name: test-reports
+          name: test-reports-smoke-test
           path: |
             ./playwright-report/**/*.*
             ./test-results/**/*.*
-      - name: Publish Test Report
+      - name: Publish smoke test report
         uses: mikepenz/action-junit-report@v5
         if: success() || failure()
         with:
@@ -69,4 +69,65 @@ jobs:
           path: |
             ~/.cache/ms-playwright
             key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
-    
+
+  run-all-tests:
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+          registry-url: "https://npm.pkg.github.com"
+      - name: Get installed Playwright version
+        id: playwright-version
+        run: echo "PLAYWRIGHT_VERSION=$(node -e "console.log(require('./package-lock.json').dependencies['@playwright/test'].version)")" >> $GITHUB_ENV
+      - name: Cache playwright binaries
+        if: always()
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: |
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}  
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        id: node-cashe
+        with:
+          path: |
+            node_modules
+          key: node_modules-${{ hashFiles('package-lock.json')}}
+      - name: Install dependencies
+        if: steps.node-cashe.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cashe-hit != 'true'      
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: npm run test:all
+      - name: Archive test results
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with: 
+          name: test-reports-all-test
+          path: |
+            ./playwright-report/**/*.*
+            ./test-results/**/*.*
+      - name: Publish all test report
+        uses: mikepenz/action-junit-report@v5
+        if: success() || failure()
+        with:
+          report_paths: "./playwright-report/results.xml"
+      - name: Save cache always
+        id: save-playwright-cache
+        if: always()
+        uses: actions/cache/save@v3
+        with:
+          path: |
+            ~/.cache/ms-playwright
+            key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
