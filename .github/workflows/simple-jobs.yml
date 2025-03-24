@@ -18,8 +18,8 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.version }}
           cache: "npm"
@@ -32,7 +32,7 @@ jobs:
         run: npm run test:smoke
       - name: Archive test results
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-reports-smoke-tests
           path: |
@@ -51,4 +51,4 @@ jobs:
     if: always()
     steps:
       - name: Print on console
-        run: echo "final-job of workflow based on node version ${{ inputs.version }}" 
+        run: echo "final-job of workflow based on node version ${{ inputs.version }}"
