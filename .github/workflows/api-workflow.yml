@@ -1,6 +1,11 @@
 name: Playwright Tests - job triggered by API call
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "node version"
+        required: false
+        default: "22"
 jobs:
   run-tests:
     runs-on: ubuntu-latest
