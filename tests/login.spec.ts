@@ -31,7 +31,7 @@ test.describe('User login to Demobank', () => {
     page,
   }) => {
     // Arrange
-    const incorrectUserId = 'tester';
+    const incorrectUserId = 'tester888';
     const expectedErrorMessage = 'identyfikator ma min. 8 znaków';
 
     // Act
@@ -47,7 +47,7 @@ test.describe('User login to Demobank', () => {
   }) => {
     // Arrange
     const userId = loginData.userId;
-    const incorrectPassword = '1234';
+    const incorrectPassword = '123';
     const expectedErrorMessage = 'hasło ma min. 8 znaków';
 
     // Act
